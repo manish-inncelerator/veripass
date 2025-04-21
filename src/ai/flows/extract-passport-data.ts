@@ -23,6 +23,7 @@ const ExtractPassportDataOutputSchema = z.object({
   dateOfBirth: z.string().describe('The date of birth of the passport holder.'),
   dateOfExpiry: z.string().describe('The date of expiry of the passport.'),
   issuingCountry: z.string().describe('The issuing country of the passport.'),
+  verificationMethod: z.string().describe('The method used to extract data (OCR or PDF parsing).')
 });
 export type ExtractPassportDataOutput = z.infer<typeof ExtractPassportDataOutputSchema>;
 
@@ -55,11 +56,7 @@ Date of Birth: The date of birth of the passport holder.
 Date of Expiry: The date of expiry of the passport.
 Issuing Country: The issuing country of the passport.
 
-{{#if (eq type "image")}}
-Passport Image: {{media url=data}}
-{{else}}
-Passport PDF: {{data}}
-{{/if}}
+Passport Data: {{data}}
 
 Return the information in JSON format.
 `,
@@ -74,5 +71,12 @@ const extractPassportDataFlow = ai.defineFlow<
   outputSchema: ExtractPassportDataOutputSchema,
 }, async input => {
   const {output} = await prompt(input);
-  return output!;
+
+  // Determine verification method
+  const verificationMethod = input.type === 'pdf' ? 'PDF parsing' : 'OCR';
+
+  return {
+    ...output!,
+    verificationMethod,
+  };
 });
