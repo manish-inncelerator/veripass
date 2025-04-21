@@ -1,1 +1,3 @@
-// Flows will be imported for their side effects in this file.
+import '@/ai/flows/flag-suspicious-data.ts';
+import '@/ai/flows/validate-passport-data.ts';
+import '@/ai/flows/extract-passport-data.ts';
